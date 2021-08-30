@@ -3,7 +3,14 @@
 
 [開發日記](https://github.com/dec880126/AV-Magnet-Catcher/blob/main/developmentDiary.md)
 
+## What's New
 **開發中 Coming Soon...**
+
+## Future
+ - 可提取 sehuatang 之相關資訊
+ - 可提取 草榴社區 之相關資訊
+ - 整合以上兩個網站之抓取系統
+ - 結合Auto SHT之功能(包含串接 Synology Web API)
 
 ## Dependences
 **Pip (= 21.1.3)**
@@ -14,3 +21,9 @@
 **Package**
  - config.py
  - tools.py
+
+## Versions
+|     | TYPE | What's New |
+|-----|------|------------|
+| DEV | 開發中  | 開發中        |
+
