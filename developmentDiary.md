@@ -24,6 +24,10 @@
 
 ## 2021.08.31
 > 11:16 ~ 11:36
-> 
+
 已成功萃取magnet<br>
 筆記: 目前接觸的所有網站包含File-Sve 2009皆需要headers cookie來發requests
+
+>  11:36 ~
+
+Cookie 與程式架構研究
