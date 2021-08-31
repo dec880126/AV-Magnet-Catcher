@@ -6,7 +6,7 @@
 ## What's New
 **開發中 Coming Soon...**
 
-## Future
+## Feature
  - 可提取 sehuatang 之相關資訊
  - 可提取 草榴社區 之相關資訊
  - 整合以上兩個網站之抓取系統
