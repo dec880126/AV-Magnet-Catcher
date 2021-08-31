@@ -1,3 +1,5 @@
+import os
+
 def make_html(input_list, fileName, titleList, magnetList, article_Code_List):
     '''
     Read the url in the input_list, and make the HTML file
@@ -40,3 +42,9 @@ def make_html(input_list, fileName, titleList, magnetList, article_Code_List):
     
     print(f"[*]{fileName} 產生成功! -> 檔案路徑: {path} 系統將自動開啟檔案...")
     return path, fileName
+
+def clearConsole() -> None:
+    command = "clear"
+    if os.name in ("nt", "dos"):  # If Machine is running on Windows, use cls
+        command = "cls"
+    os.system(command)
