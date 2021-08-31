@@ -21,6 +21,7 @@
  - 整合 Auto SHT
  - 串接 Synology Web API
  - 可自定義抓取影片風格(透過關鍵字篩選實現)
+ - 未來: 圖形化使用者介面(GUI)
 
 ## Dependences
 **Pip (= 21.1.3)**
