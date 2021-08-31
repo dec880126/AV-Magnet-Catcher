@@ -20,6 +20,7 @@
  - 整合以上兩個網站之抓取系統
  - 整合 Auto SHT
  - 串接 Synology Web API
+ - 可自定義抓取影片風格(透過關鍵字篩選實現)
 
 ## Dependences
 **Pip (= 21.1.3)**
