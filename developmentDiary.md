@@ -28,6 +28,6 @@
 已成功萃取magnet<br>
 筆記: 目前接觸的所有網站包含File-Sve 2009皆需要headers cookie來發requests
 
->  11:36 ~
+>  11:36 ~ 13:17
 
-Cookie 與程式架構研究
+Cookie 與程式架構研究，主程式架構設計
