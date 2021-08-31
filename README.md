@@ -6,6 +6,10 @@
 ## What's New
 **開發中 Coming Soon...**
 
+## Guides
+
+[AVMC - 官方Wiki](https://github.com/dec880126/AV-Magnet-Catcher/wiki)
+
 ## Feature
  - 可提取 sehuatang 之相關資訊
  - 可提取 草榴社區 之相關資訊
