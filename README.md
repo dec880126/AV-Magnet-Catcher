@@ -18,7 +18,7 @@
  - 可提取 sehuatang 之相關資訊
  - 可提取 草榴社區 之相關資訊
  - 整合以上兩個網站之抓取系統
- - 結合Auto SHT之功能
+ - 整合 Auto SHT
  - 串接 Synology Web API
 
 ## Dependences
