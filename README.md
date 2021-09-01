@@ -8,7 +8,7 @@
 
 ## Guides
 
-[AVMC - 官方Wiki](https://github.com/dec880126/AV-Magnet-Catcher/wiki)
+[AVMC - Official Wiki](https://github.com/dec880126/AV-Magnet-Catcher/wiki)
 
 ## Download
 
