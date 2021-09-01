@@ -48,7 +48,7 @@
 
  - 程式架構設計
  - 自動獲取Cookie
- - 製作HTML files (有嘗試搭配Bootstrap套件，但失敗，改天再繼續，現階段與Auto sht使用同模板)
+ - 製作HTML files (有嘗試搭配jQuery套件，但失敗，改天再繼續，現階段與Auto sht使用同模板)
 
 > 18:00 ~ 19:00
 
@@ -58,4 +58,5 @@
 > 19:00 ~ 20:30
 
  - 整理Code
+ - 搭配 jQuery 套件: bxSlider
  - 除錯
