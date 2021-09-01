@@ -2,6 +2,8 @@ import sys
 import os
 
 from package.tools import clearConsole
+from package.config import check_config_if_exist, load_config, make_config
+from t66y import start as t66y_start
 
 info = {
     "author": "CyuanHunag",
@@ -15,7 +17,7 @@ class Endding(Exception):
         sys.exit()
 
 
-def Auto_sht_function(functionChoose):
+def AVMC_function(functionChoose):
     """
     功能清單
     type functionChoose: str
@@ -25,7 +27,7 @@ def Auto_sht_function(functionChoose):
 
     return method()
 
-def exit_Auto_sht():
+def exit_AVMC():
     """
     刪除 HTML files 並關閉程式
     """
@@ -39,32 +41,43 @@ def choose_fourmMode():
         clearConsole()
         print("[*]================== 選擇論壇 ==================")
         print("[*]目前支援之論壇有: ")
-        print("[*]\t1. 色花堂 (sehuatang.org)")
-        print("[*]\t2. 草榴社區 (t66y.com)")
+        # print("[*]\t1. 色花堂 (sehuatang.org)")
+        print("[*]\t1. 草榴社區 (t66y.com)")
         print("[*]=============================================")
         fourmChoose = input("[?]請輸入選擇的論壇之編號: ")
 
-        if fourmChoose not in ("1", "2"):
+        # if fourmChoose not in ("1", "2"):
+        if fourmChoose not in ("1"):
             input("[!]警告: 請輸入正確的論壇編號! \n[*]請按一下鍵盤上的「Enter」以繼續...")
             continue
         break
 
+    # if fourmChoose == "1":
+    #     print("sehuatang")
+    # elif fourmChoose == "2":
     if fourmChoose == "1":
-        print("sehuatang")
-    elif fourmChoose == "2":
-        print("t66y.com")
+        t66y_start()
 
     input("[*]請按一下鍵盤上的「Enter」以回到主畫面...")
 
 functionDefined = {
     "1": choose_fourmMode,
-    "EXIT": exit_Auto_sht,
+    "EXIT": exit_AVMC,
 }
 
 
 
 
 if __name__ == "__main__":
+    #  Load config
+    if check_config_if_exist("config.ini"):
+        pass
+    else:
+        print("[!]若為初次運行 AVMC ，請先至檔案目錄下配置 config.ini")
+        make_config("./config.ini")
+        os.system("pause")
+        sys.exit()
+
     while True:
         print("[*]==================== AVMC =====================")
         print("[*]" + info["version"].center(46))
@@ -73,9 +86,6 @@ if __name__ == "__main__":
         print("[*]" + info["official_site"].center(46))
         print("[*]===============================================")
         print("[*]               1. 開始抓取")
-        print("[*]               2. 修改日期")
-        print("[*]               3. 資料查詢")
-        print("[*]               4. 重製資料")
         print("[*]               EXIT. 結束程式")
         print("[*]          隨時可按 Ctrl + C 回到此頁面")
         print("[*]===============================================")
@@ -93,7 +103,7 @@ if __name__ == "__main__":
 
         try:
             # 根據所選擇之功能開始作業
-            Auto_sht_function(functionChoose)
+            AVMC_function(functionChoose)
         except Endding:
             print("\n程式結束...")
         except KeyboardInterrupt:
