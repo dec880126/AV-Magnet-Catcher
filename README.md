@@ -24,10 +24,13 @@
  - 未來: 圖形化使用者介面(GUI)
 
 ## Dependences
-**Pip (= 21.1.3)**
- - Python (= 3.9.6)
+**Python (== 3.9.6)**
+
+**Pip (== 21.1.3)**
  - requests (>= 2.26.0)
  - bs4 (>= 0.0.1)
+ - alive-progress (>= 2.0.0)
+ - Datetime (>= 4.3)
 
 **Package**
  - config.py
@@ -36,7 +39,7 @@
 ## Versions
 |     | TYPE | What's New |
 |-----|------|------------|
-| DEV | 開發中  | 開發中        |
+| 1.0.0 | 初版  | 簡化草榴凌亂的頁面        |
 
 ## Declaration 
 
