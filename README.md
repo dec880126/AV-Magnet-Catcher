@@ -4,7 +4,10 @@
 [開發日記](https://github.com/dec880126/AV-Magnet-Catcher/blob/main/developmentDiary.md)
 
 ## What's New
-**開發中 Coming Soon...**
+
+目前只能整理草榴凌亂的頁面
+
+抓取magnet被reCAPTCHA擋住了==
 
 ## Guides
 
