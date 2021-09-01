@@ -46,9 +46,9 @@
 
 > 13:35 ~ 17:30
 
-1. 程式架構設計
-2. 自動獲取Cookie
-3. 製作HTML files (有嘗試搭配Bootstrap套件，但失敗，改天再繼續，現階段與Auto sht使用同模板)
+ - 程式架構設計
+ - 自動獲取Cookie
+ - 製作HTML files (有嘗試搭配Bootstrap套件，但失敗，改天再繼續，現階段與Auto sht使用同模板)
 
 > 18:00 ~ 19:00
 
