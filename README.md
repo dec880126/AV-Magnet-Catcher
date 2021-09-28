@@ -3,6 +3,12 @@
 
 [開發日記](https://github.com/dec880126/AV-Magnet-Catcher/blob/main/developmentDiary.md)
 
+## Working Now
+
+> 2021.09.29
+
+正在整合Auto SHT原有功能
+
 ## What's New
 
 目前只能整理草榴凌亂的頁面
