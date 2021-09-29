@@ -38,6 +38,16 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "t66y": config["Cookies"]["t66y"],
             "FileSave2009": config["Cookies"]["FileSave2009"]
         }
+    elif mode == 'Synology':
+        return {
+            "upload": config["Synology"]["upload"],
+            "IP": config["Synology"]["IP"],
+            "PORT": config["Synology"]["PORT"],
+            "PATH": config["Synology"]["PATH"],
+            "SECURE": config["Synology"]["SECURE"] == 1,
+            "USER": config["Synology"]["USER"],
+            "PASSWORD": config["Synology"]["PASSWORD"],
+        }
     else:
         print("[!]Error: 請選擇 load_config 之模式")
 
