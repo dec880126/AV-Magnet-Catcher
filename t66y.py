@@ -3,7 +3,7 @@ import requests
 import bs4
 import time
 from datetime import datetime
-from alive_progress import alive_bar
+from rich.progress import track
 import webbrowser
 # import concurrent.futures
 # with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -156,10 +156,8 @@ def article_parser_core(url: str):
 def article_parser_executor(urls: list):
     print("[*]正在分析文章資訊...")
     start_time = time.time()
-    with alive_bar(len(urls), bar='halloween', spinner='dots_waves2') as bar:
-        for url in urls:
-            article_parser_core(url)
-            bar()
+    for progress, url in zip(track(urls, description='[>]正在分析文章'), urls):
+        article_parser_core(url)
     end_time = time.time()
     print(f"[*]一共花了 {end_time - start_time:2.2f} 秒來分析 {len(urls)} 篇文章")
 
@@ -194,7 +192,7 @@ def start(scrabDate: str):
     articleDict = {}
     article_parser_executor(links)
 
-    fileName = "AVMC-Viewer-T66Y" + "無碼" + ".html"
+    fileName = "AVMC-Viewer-T66Y-" + "無碼" + ".html"
     tools.make_html(articleDict.values(), fileName)
     webbrowser.open_new_tab(fileName)
 
