@@ -85,6 +85,7 @@ def start(scrabDate: str):
     global currentFourm, todays
     currentFourm = Sehuatang()
     typeList = ("無碼", "有碼", "國產", "歐美", "中文")
+    magnetSelected = []
     URL_library = {
         1: 'https://www.sehuatang.org/forum-36-1.html',
         2: 'https://www.sehuatang.org/forum-37-1.html',
@@ -104,25 +105,32 @@ def start(scrabDate: str):
     task_article.join()
     task_pgbar.join()
 
-    print(f"[!]共 {len(todays)} 篇文章")    
-    fileName =  "AVMC-Viewer-SHT-" + typeList[fourmIdx] + ".html"
-    make_html(currentFourm.articleINFO.values(), fileName)
-    webbrowser.open_new_tab(fileName)
+    if todays:
+        print(f"[!]共 {len(todays)} 篇文章")    
+        fileName =  "AVMC-Viewer-SHT-" + typeList[fourmIdx] + ".html"
+        make_html(currentFourm.articleINFO.values(), fileName)
+        webbrowser.open_new_tab(fileName)
 
-    magnetSelected = select_article(workFourm = currentFourm)
+        magnetSelected = select_article(workFourm = currentFourm)
 
-    syno_info = config.load_config(mode = 'Synology')
+        syno_info = config.load_config(mode = 'Synology')
+    else:
+        print(f"[!]日期: {scrabDate} 尚未有文章更新 ! ")
+        return
 
-    # Synology Web API
-    if syno_info["upload"]:
-        print("[*]" + "Synology Web API".center(50, "="))
-        ds = Synology_Web_API.SynologyDownloadStation(
-            ip=syno_info["IP"], port=syno_info["PORT"], secure=syno_info["SECURE"]
-        )
-        ds.login(syno_info["USER"], syno_info["PASSWORD"])
-        for magnet_to_download in magnetSelected:
-            ds.uploadTorrent(magnet_to_download, syno_info["PATH"])
-        print("[*]" + "Synology Web API 作業完成".center(50, "="))
+    if magnetSelected:
+        # Synology Web API
+        if syno_info["upload"]:
+            print("[*]" + "Synology Web API".center(50, "="))
+            ds = Synology_Web_API.SynologyDownloadStation(
+                ip=syno_info["IP"], port=syno_info["PORT"], secure=syno_info["SECURE"]
+            )
+            ds.login(syno_info["USER"], syno_info["PASSWORD"])
+            for magnet_to_download in magnetSelected:
+                ds.uploadTorrent(magnet_to_download, syno_info["PATH"])
+            print("[*]" + "Synology Web API 作業完成".center(50, "="))
+    else:
+        print("[*]未選取任何文章 ! ")
 
 
 def chooseFourm() -> int:
@@ -171,7 +179,10 @@ def select_article(workFourm: Sehuatang) -> list:
             idx += 1
         else:
             print(f'[>]已選擇 {avList[idx][0]} 之 magnet: {avList[idx][1]}')
-            magnetSelected.append(avList[idx][1])
+            if avList[idx][1]:
+                print("[!]這部已經選取過了喔~ 已在清單內")
+            else:
+                magnetSelected.append(avList[idx][1])
             idx += 1
 
     return magnetSelected
