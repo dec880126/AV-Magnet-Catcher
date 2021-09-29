@@ -27,7 +27,7 @@ class Article():
         self.imgLinks = imgLinks
         self.magnet = magnet
 
-def get_todayLists(fourmName_zh: str, fourmName_en: str) -> list:
+def get_todayLists(fourmName_zh: str, fourmName_en: str, scrabDate: str) -> list:
     fourmDict = {}
     urlDict = {
         "無碼": "http://t66y.com/thread0806.php?fid=2&search=2"
@@ -58,8 +58,7 @@ def get_todayLists(fourmName_zh: str, fourmName_en: str) -> list:
             continue
         # <----- 檢查標籤是否為「新作」 end ----->
 
-        # <----- 篩選本日文章 start ----->   
-        today = datetime.now().strftime("%Y-%m-%d")
+        # <----- 篩選本日文章 start ----->
         releaseDate = article.find("div", attrs={"class": "f12"}).find("span").get("title")
         # print(releaseDate)
         if len(releaseDate) < 6:
@@ -81,7 +80,7 @@ def get_todayLists(fourmName_zh: str, fourmName_en: str) -> list:
             releaseDate = releaseDate[-10:]
             
         # TODO: 測試完要重新開啟 此為挑選本日文章功能
-        if releaseDate != today:
+        if releaseDate != scrabDate:
             continue
         # <----- 篩選本日文章 end ----->        
 
@@ -170,7 +169,7 @@ def getRidof_keyWord(url: Tag, fourmDict: dict) -> bool:
     """
     return any([filter in url.get_text() for filter in fourmDict["無碼"].infoDict["exclude"]])
 
-def start():
+def start(scrabDate: str):
     _session = requests.session()
     _session.get(
         "http://t66y.com/thread0806.php?fid=2&search=2", 
@@ -189,7 +188,7 @@ def start():
         "Cookie": Cookies["t66y"]
     }
 
-    links = get_todayLists(fourmName_zh="無碼", fourmName_en="Uncensored")
+    links = get_todayLists(fourmName_zh="無碼", fourmName_en="Uncensored", scrabDate=scrabDate)
 
     global articleDict
     articleDict = {}
