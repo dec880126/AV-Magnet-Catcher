@@ -38,7 +38,10 @@ def make_html(pageINFOs: list, fileName: str):
                 f.write(f"""\t\t\t<h2><a href="{link}"  target="_blank">{title}</a></h2>\n\t\t\t\t<ul class="bxslider">\n""")
             elif imgLink == "end of page":
                 # 頁尾
-                to_write = "\t\t\t\t</ul>\t\t\t\t<br>\n\t\t\t\t<h3><a href = " + magnet + ">下載連結</a></h3>\n"
+                if 'magnet:?xt=urn:btih:' in magnet:
+                    to_write = f"\t\t\t\t</ul>\t\t\t\t<br>\n\t\t\t\t<h3><a>{magnet}</a></h3>\n"
+                else:
+                    to_write = f"\t\t\t\t</ul>\t\t\t\t<br>\n\t\t\t\t<h3><a href = '{magnet}'>下載連結</a></h3>\n"
                 f.write(to_write)
                 f.write("\t\t\t<hr />\n")
             else:

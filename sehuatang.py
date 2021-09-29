@@ -1,19 +1,18 @@
 import requests
 import bs4
-from rich.progress import track
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+import threading
+from rich.progress import Progress, track
 from package.tools import make_html
+import time
 
 class Article():
-    pass
-    # def __init__(self, link: str, title: str, imgLinks: list, magnet: str) -> None:
-    #     self.link = link
-    #     self.title = title
-    #     self.imgLinks = imgLinks
-    #     self.magnet = magnet
+    def __init__(self) -> None:
+        self.safe = False
 
 class Sehuatang():
     def __init__(self) -> None:
-        self.articleINFO = {}
+        self.articleINFO = {}        
 
     def get_todayList(self, URL, todayIs: str = '2021-09-28') -> list:
         res = requests.get(URL)
@@ -44,56 +43,52 @@ class Sehuatang():
 
         return todayList
 
-    def getMagnets(self, todayList: list) -> dict:
-        magnetDict = {}
+    def get_Magnet_and_Pics(self, articleCode: str) -> None:
+        global progress_done
+        progress_done = False
+        response_of_pages = requests.get("https://www.sehuatang.org/thread-" + articleCode + "-1-1.html")
+        bs_pages = bs4.BeautifulSoup(response_of_pages.text, "html.parser")
 
-        for progress, articleCode in zip(track(todayList, description="[\]正在抓取 Magnet "), todayList):
-            response_of_pages = requests.get(
-                "https://www.sehuatang.org/thread-" + articleCode + "-1-1.html"
-            )
-            bs_pages = bs4.BeautifulSoup(response_of_pages.text, "html.parser")
+        # Get Magnet
+        magnet = bs_pages.find("div", "blockcode").get_text()
+        self.articleINFO[articleCode].magnet = magnet.removesuffix("复制代码")
 
-            magnet = bs_pages.find("div", "blockcode").get_text()
-            magnetDict[articleCode] = magnet.removesuffix("复制代码")
-            self.articleINFO[articleCode].magnet = magnetDict[articleCode]
+        # Get Pics
+        img_block = bs_pages.find_all("ignore_js_op")
 
-        return magnetDict
-
-    def getPics(self, todayList: list) -> dict:
-        picsDict = {}
         picsList = []
+        picsList.append("Head of Page")
+        for block in img_block[:-1]:
+            pic_link = block.find("img").get("file")
+            if pic_link != None:
+                picsList.append(pic_link)                    
+        picsList.append("end of page")
 
-        for progress, articleCode in zip(track(todayList, description="[\]正在抓取預覽圖片"), todayList):
-            response_of_pages = requests.get(
-                "https://www.sehuatang.org/thread-" + articleCode + "-1-1.html"
-            )
-            soup = bs4.BeautifulSoup(response_of_pages.text, "html.parser")
+        self.articleINFO[articleCode].imgLinks = picsList
+        progress_done = True
 
-            img_block = soup.find_all("ignore_js_op")
+def task_progress_bar():
+    for progress, task in zip(track(todays, description=f"[\]正在分析文章資料"), todays):
+        while not progress_done:
+            pass
 
-            picsList.append("Head of Page")
-            for block in img_block[:-1]:
-                pic_link = block.find("img").get("file")
-                if pic_link != None:
-                    picsList.append(pic_link)                    
-            picsList.append("end of page")
+def task_articleParser():
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(uma.get_Magnet_and_Pics, todays)
 
-            picsDict[articleCode] = picsList
-            self.articleINFO[articleCode].imgLinks = picsDict[articleCode]
+def start():
+    global uma, todays
+    uma = Sehuatang()
+    todays = uma.get_todayList('https://sehuatang.org/forum-36-1.html')
 
-        # path, fileName = make_html(pic_link_List, "Auto_SHT_Pic.html")
-        # return path, fileName
-        # return picsDict
+    task_pgbar = threading.Thread(target=task_progress_bar)
+    task_pgbar.start()
+    task_article = threading.Thread(target=task_articleParser)
+    task_article.start()
+    
+    task_article.join()
+    task_pgbar.join()
 
-    def showV(self):
-        print(vars(vars(self)['articleINFO']['613213']))
+    make_html(uma.articleINFO.values(), 'test.html')
 
-
-uma = Sehuatang()
-
-todays = uma.get_todayList('https://sehuatang.org/forum-36-1.html')
-mags = uma.getMagnets(todays)
-uma.getPics(todays)
-# print(mags)
-# uma.showV()
-make_html(uma.articleINFO.values(), 'test.html')
+# start()
