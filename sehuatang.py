@@ -3,9 +3,13 @@ import bs4
 from concurrent.futures import ThreadPoolExecutor
 import threading
 from rich.progress import track
-from package.tools import make_html
 import webbrowser
 from datetime import datetime
+
+from package.tools import make_html
+import package.Synology_Web_API as Synology_Web_API
+import package.config as config
+
 
 class Article():
     def __init__(self) -> None:
@@ -75,11 +79,12 @@ def task_progress_bar():
 
 def task_articleParser():
     with ThreadPoolExecutor(max_workers=10) as executor:
-        executor.map(uma.get_Magnet_and_Pics, todays)
+        executor.map(currentFourm.get_Magnet_and_Pics, todays)
 
-def start():
-    global uma, todays
-    uma = Sehuatang()
+def start(scrabDate: str):
+    global currentFourm, todays
+    currentFourm = Sehuatang()
+    typeList = ("無碼", "有碼", "國產", "歐美", "中文")
     URL_library = {
         1: 'https://www.sehuatang.org/forum-36-1.html',
         2: 'https://www.sehuatang.org/forum-37-1.html',
@@ -88,7 +93,8 @@ def start():
         5: 'https://www.sehuatang.org/forum-103-1.html'
     }
 
-    todays = uma.get_todayList(URL_library[chooseFourm()])
+    fourmIdx = chooseFourm()
+    todays = currentFourm.get_todayList(URL_library[fourmIdx], todayIs=scrabDate)
 
     task_pgbar = threading.Thread(target=task_progress_bar)
     task_pgbar.start()
@@ -98,10 +104,26 @@ def start():
     task_article.join()
     task_pgbar.join()
 
-    print(f"[!]共 {todays} 篇文章")
-    fileName =  "AVMC-Viewer-SHT" + "無碼" + ".html"
-    make_html(uma.articleINFO.values(), fileName)
+    print(f"[!]共 {len(todays)} 篇文章")    
+    fileName =  "AVMC-Viewer-SHT-" + typeList[fourmIdx] + ".html"
+    make_html(currentFourm.articleINFO.values(), fileName)
     webbrowser.open_new_tab(fileName)
+
+    magnetSelected = select_article(workFourm = currentFourm)
+
+    syno_info = config.load_config(mode = 'Synology')
+
+    # Synology Web API
+    if syno_info["upload"]:
+        print("[*]" + "Synology Web API".center(50, "="))
+        ds = Synology_Web_API.SynologyDownloadStation(
+            ip=syno_info["IP"], port=syno_info["PORT"], secure=syno_info["SECURE"]
+        )
+        ds.login(syno_info["USER"], syno_info["PASSWORD"])
+        for magnet_to_download in magnetSelected:
+            ds.uploadTorrent(magnet_to_download, syno_info["PATH"])
+        print("[*]" + "Synology Web API 作業完成".center(50, "="))
+
 
 def chooseFourm() -> int:
     typeList = ("無碼", "有碼", "國產", "歐美", "中文")
@@ -118,3 +140,40 @@ def chooseFourm() -> int:
             print(f'[*]選擇的是 {typeChoose}. {typeList[typeChoose-1]} 分區')
             print('[*]===============================================') 
             return typeChoose
+
+def select_article(workFourm: Sehuatang) -> list:
+    titleList = [workFourm.articleINFO[articleCode].title for articleCode in todays]
+    magList = [workFourm.articleINFO[articleCode].magnet  for articleCode in todays]
+    magnetSelected = []
+
+    avList = {}
+
+    for idx in range(1, len(titleList)+1):
+        avList[idx] = [
+            titleList[idx-1],
+            magList[idx-1]
+        ]
+        # ex: 123: ['MIAD-891 時間が止まる女子便所 無意識に失禁するオンナ達', 'magnet:?xt=urn:btih:235F0BE6E769D13D1F59F335AD26A9C1C6C9ADDC'] ... and so on
+
+    idx = 1
+    while idx < len(titleList)+1:
+        print("[*]" + '*'*50)
+        print("[*]目前選擇的是:")
+        action = input(f"[>]{idx}. {avList[idx][0]}: ")
+        if action == '-1' and idx == 1:
+            print("[!]目前還不能取消操作 ! ")
+            continue
+        
+        if action == '-1':
+            idx -= 1
+        elif action == '':
+            print('[*]不要這部 ! ')
+            idx += 1
+        else:
+            print(f'[>]已選擇 {avList[idx][0]} 之 magnet: {avList[idx][1]}')
+            magnetSelected.append(avList[idx][1])
+            idx += 1
+
+    return magnetSelected
+
+# start()
