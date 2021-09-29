@@ -58,8 +58,9 @@ def make_config(path: str, showINFO = True) -> None:
 
     with open(path, "w", encoding="utf-8") as f:
         # system_config(f)
-        uncensored_config(f)
+        t66y_config(f)
         # cookie_config(f)
+        sht_config(f)
 
     if showINFO:
         print("[!] Config 已生成!")
@@ -76,7 +77,7 @@ def system_config(f: TextIOWrapper) -> None:
     f.write("MultiThreading = \n")
 
 
-def uncensored_config(f: TextIOWrapper) -> None:
+def t66y_config(f: TextIOWrapper) -> None:
     f.write("\n[Uncensored]\n")
     f.write("exclude = \n")
 
@@ -84,5 +85,18 @@ def cookie_config(f: TextIOWrapper) -> None:
     f.write("\n[Cookies]\n")
     f.write("t66y = \n")
     f.write("FileSave2009 = \n")
+
+def sht_config(f: TextIOWrapper) -> None:
+    f.write("\n[Synology]\n")
+    f.write("; 若要開啟 Synology 自動上傳，將 upload 設為1\n")
+    f.write("upload = \n")
+    f.write("IP = \n")
+    f.write("PORT = \n")
+    f.write("; BT 下載之路徑\n")
+    f.write("PATH = \n")
+    f.write("; SECURE 預設為0\n")
+    f.write("SECURE = 0\n")
+    f.write("USER = \n")
+    f.write("PASSWORD = \n")
 
 
