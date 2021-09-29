@@ -4,7 +4,8 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import threading
 from rich.progress import Progress, track
 from package.tools import make_html
-import time
+import webbrowser
+from datetime import datetime
 
 class Article():
     def __init__(self) -> None:
@@ -14,7 +15,7 @@ class Sehuatang():
     def __init__(self) -> None:
         self.articleINFO = {}        
 
-    def get_todayList(self, URL, todayIs: str = '2021-09-28') -> list:
+    def get_todayList(self, URL, todayIs: str = datetime.now().strftime("%Y-%m-%d")) -> list:
         res = requests.get(URL)
         soup = bs4.BeautifulSoup(res.text, "html.parser")
         tbodys = soup.find_all('tbody')
@@ -89,6 +90,7 @@ def start():
     task_article.join()
     task_pgbar.join()
 
-    make_html(uma.articleINFO.values(), 'test.html')
-
+    fileName =  "AVMC-Viewer-SHT" + "無碼" + ".html"
+    make_html(uma.articleINFO.values(), fileName)
+    webbrowser.open_new_tab(fileName)
 # start()

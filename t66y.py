@@ -195,7 +195,7 @@ def start():
     articleDict = {}
     article_parser_executor(links)
 
-    fileName = "t66y-Viewer-" + "無碼" + ".html"
+    fileName = "AVMC-Viewer-T66Y" + "無碼" + ".html"
     tools.make_html(articleDict.values(), fileName)
     webbrowser.open_new_tab(fileName)
 
