@@ -1,4 +1,6 @@
 import os
+import time
+import datetime
 
 def make_html(pageINFOs: list, fileName: str):
     '''
@@ -61,3 +63,28 @@ def clearConsole() -> None:
     if os.name in ("nt", "dos"):  # If Machine is running on Windows, use cls
         command = "cls"
     os.system(command)
+
+def changeDate() -> datetime:
+    """
+    In this function can input the days you want to change
+    rtype: datetime
+    """
+    print('[*]===============================================')
+    today = str(time.strftime("%Y-%m-%d", time.localtime()))
+    print(f"[*]今天是 {today}")
+    print(f"[*](昨天: -1, 前天: -2...)")
+    print('[*]===============================================')
+    date = input("[?]請問日期要更改為?:")
+    if int(date) < 0 and int(date) > -4:
+        return getYesterday(abs(int(date)))
+        
+def getYesterday(how_many_day_pre) -> datetime: 
+    """
+    Get date you want by input parameter
+    type how_many_day_pre: int
+    rtype: datetime
+    """
+    today=datetime.date.today() 
+    oneday=datetime.timedelta(days=how_many_day_pre) 
+    yesterday=today-oneday  
+    return yesterday
