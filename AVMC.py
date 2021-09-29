@@ -67,7 +67,7 @@ def edit_date():
     rtype: str <- today's info
     """
     global today
-    today = changeDate()
+    today = changeDate(today)
 
 functionDefined = {
     "1": choose_fourmMode,

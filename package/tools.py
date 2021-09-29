@@ -64,20 +64,31 @@ def clearConsole() -> None:
         command = "cls"
     os.system(command)
 
-def changeDate() -> datetime:
+def changeDate(today: str) -> datetime:
     """
     In this function can input the days you want to change
     rtype: datetime
     """
     print('[*]===============================================')
-    today = str(time.strftime("%Y-%m-%d", time.localtime()))
     print(f"[*]今天是 {today}")
-    print(f"[*](昨天: -1, 前天: -2...)")
+    print(f"[*]操作方式:\n[*]\t昨天: -1, 前天: -2... 最多到-5\n[*]\t若要重置為今日日期，請輸入 'reset'")
     print('[*]===============================================')
     date = input("[?]請問日期要更改為?:")
-    if int(date) < 0 and int(date) > -4:
-        return getYesterday(abs(int(date)))
-        
+    if date in ('reset', 'RESET'):
+        new_date = str(time.strftime("%Y-%m-%d", time.localtime()))
+        print(f"[*]日期已重置為今日日期: {new_date}")
+        input('[*]請按 Enter 鍵回到主選單...')
+        return new_date
+
+    if int(date) < 0 and int(date) > -6:
+        new_date = getYesterday(abs(int(date)))
+    else:
+        new_date = today
+
+    print(f"[*]日期已更新為: {new_date}")
+    input('[*]請按 Enter 鍵回到主選單...')
+    return new_date
+
 def getYesterday(how_many_day_pre) -> datetime: 
     """
     Get date you want by input parameter
