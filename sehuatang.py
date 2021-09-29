@@ -1,8 +1,8 @@
 import requests
 import bs4
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import threading
-from rich.progress import Progress, track
+from rich.progress import track
 from package.tools import make_html
 import webbrowser
 from datetime import datetime
@@ -69,7 +69,7 @@ class Sehuatang():
         progress_done = True
 
 def task_progress_bar():
-    for progress, task in zip(track(todays, description=f"[\]正在分析文章資料"), todays):
+    for progress in zip(track(todays, description=f"[\]正在分析文章資料"), todays):
         while not progress_done:
             pass
 
@@ -80,7 +80,15 @@ def task_articleParser():
 def start():
     global uma, todays
     uma = Sehuatang()
-    todays = uma.get_todayList('https://sehuatang.org/forum-36-1.html')
+    URL_library = {
+        1: 'https://www.sehuatang.org/forum-36-1.html',
+        2: 'https://www.sehuatang.org/forum-37-1.html',
+        3: 'https://www.sehuatang.org/forum-2-1.html',
+        4: 'https://www.sehuatang.org/forum-38-1.html',
+        5: 'https://www.sehuatang.org/forum-103-1.html'
+    }
+
+    todays = uma.get_todayList(URL_library[chooseFourm()])
 
     task_pgbar = threading.Thread(target=task_progress_bar)
     task_pgbar.start()
@@ -90,7 +98,23 @@ def start():
     task_article.join()
     task_pgbar.join()
 
+    print(f"[!]共 {todays} 篇文章")
     fileName =  "AVMC-Viewer-SHT" + "無碼" + ".html"
     make_html(uma.articleINFO.values(), fileName)
     webbrowser.open_new_tab(fileName)
-# start()
+
+def chooseFourm() -> int:
+    typeList = ("無碼", "有碼", "國產", "歐美", "中文")
+    print('[*]===============================================') 
+    print("[*]                 1. 無碼")
+    print("[*]                 2. 有碼")
+    print("[*]                 3. 國產")
+    print("[*]                 4. 歐美")
+    print("[*]                 5. 中文")
+    print('[*]===============================================') 
+    while True:     
+        typeChoose = int(input(f"[?]請選擇分區(1~5):"))
+        if typeChoose >= 1 and typeChoose <= 5:
+            print(f'[*]選擇的是 {typeChoose}. {typeList[typeChoose-1]} 分區')
+            print('[*]===============================================') 
+            return typeChoose
