@@ -171,19 +171,19 @@ def select_article(workFourm: Sehuatang) -> list:
         if action == '-1' and idx == 1:
             print("[!]目前還不能取消操作 ! ")
             continue
-        
+                
         if action == '-1':
             idx -= 1
+            continue
         elif action == '':
             print('[*]不要這部 ! ')
-            idx += 1
         else:
             print(f'[>]已選擇 {avList[idx][0]} 之 magnet: {avList[idx][1]}')
             if avList[idx][1]:
                 print("[!]這部已經選取過了喔~ 已在清單內")
             else:
                 magnetSelected.append(avList[idx][1])
-            idx += 1
+        idx += 1
 
     return magnetSelected
 
