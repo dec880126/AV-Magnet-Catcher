@@ -3,7 +3,7 @@ import requests
 import bs4
 import time
 from datetime import datetime
-from alive_progress import alive_bar
+from rich.progress import track
 import webbrowser
 # import concurrent.futures
 # with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -27,13 +27,13 @@ class Article():
         self.imgLinks = imgLinks
         self.magnet = magnet
 
-def get_todayLists(fourmName_zh: str, fourmName_en: str) -> list:
+def get_todayLists(fourmName_zh: str, fourmName_en: str, scrabDate: str) -> list:
     fourmDict = {}
     urlDict = {
         "無碼": "http://t66y.com/thread0806.php?fid=2&search=2"
     }
 
-    fourmDict[fourmName_zh] = Fourm(fourmName_zh, config.load_config(mode=fourmName_en))
+    fourmDict[fourmName_zh] = Fourm(fourmName_zh, config.load_config(mode='t66y'))
 
     res = requests.get(urlDict[fourmName_zh], headers=t66y_headers)
     res.encoding = "gbk"
@@ -58,8 +58,7 @@ def get_todayLists(fourmName_zh: str, fourmName_en: str) -> list:
             continue
         # <----- 檢查標籤是否為「新作」 end ----->
 
-        # <----- 篩選本日文章 start ----->   
-        today = datetime.now().strftime("%Y-%m-%d")
+        # <----- 篩選本日文章 start ----->
         releaseDate = article.find("div", attrs={"class": "f12"}).find("span").get("title")
         # print(releaseDate)
         if len(releaseDate) < 6:
@@ -81,7 +80,7 @@ def get_todayLists(fourmName_zh: str, fourmName_en: str) -> list:
             releaseDate = releaseDate[-10:]
             
         # TODO: 測試完要重新開啟 此為挑選本日文章功能
-        if releaseDate != today:
+        if releaseDate != scrabDate:
             continue
         # <----- 篩選本日文章 end ----->        
 
@@ -157,10 +156,8 @@ def article_parser_core(url: str):
 def article_parser_executor(urls: list):
     print("[*]正在分析文章資訊...")
     start_time = time.time()
-    with alive_bar(len(urls), bar='halloween', spinner='dots_waves2') as bar:
-        for url in urls:
-            article_parser_core(url)
-            bar()
+    for progress, url in zip(track(urls, description='[>]正在分析文章'), urls):
+        article_parser_core(url)
     end_time = time.time()
     print(f"[*]一共花了 {end_time - start_time:2.2f} 秒來分析 {len(urls)} 篇文章")
 
@@ -170,7 +167,7 @@ def getRidof_keyWord(url: Tag, fourmDict: dict) -> bool:
     """
     return any([filter in url.get_text() for filter in fourmDict["無碼"].infoDict["exclude"]])
 
-def start():
+def start(scrabDate: str):
     _session = requests.session()
     _session.get(
         "http://t66y.com/thread0806.php?fid=2&search=2", 
@@ -189,13 +186,13 @@ def start():
         "Cookie": Cookies["t66y"]
     }
 
-    links = get_todayLists(fourmName_zh="無碼", fourmName_en="Uncensored")
+    links = get_todayLists(fourmName_zh="無碼", fourmName_en="Uncensored", scrabDate=scrabDate)
 
     global articleDict
     articleDict = {}
     article_parser_executor(links)
 
-    fileName = "t66y-Viewer-" + "無碼" + ".html"
+    fileName = "AVMC-Viewer-T66Y-" + "無碼" + ".html"
     tools.make_html(articleDict.values(), fileName)
     webbrowser.open_new_tab(fileName)
 

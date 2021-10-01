@@ -1,8 +1,14 @@
 import os
+import re
+import time
+import datetime
 
 def make_html(pageINFOs: list, fileName: str):
     '''
     Read the url in the imgLinks, and make the HTML file
+
+    pageINFOs is list of Article() in sehuatang.py
+
     type imgLinks: list
     '''
     path = "./" + fileName
@@ -27,6 +33,8 @@ def make_html(pageINFOs: list, fileName: str):
     f.write("""\t<body>\n\t\t<div style="text-align:center;">\n""")
 
     for page in  pageINFOs:
+        if page.tag == '素人已排除':
+            continue
         link = page.link
         title = page.title
         imgLinks = page.imgLinks
@@ -38,7 +46,10 @@ def make_html(pageINFOs: list, fileName: str):
                 f.write(f"""\t\t\t<h2><a href="{link}"  target="_blank">{title}</a></h2>\n\t\t\t\t<ul class="bxslider">\n""")
             elif imgLink == "end of page":
                 # 頁尾
-                to_write = "\t\t\t\t</ul>\t\t\t\t<br>\n\t\t\t\t<h3><a href = " + magnet + ">下載連結</a></h3>\n"
+                if 'magnet:?xt=urn:btih:' in magnet:
+                    to_write = f"\t\t\t\t</ul>\t\t\t\t<br>\n\t\t\t\t<h3><a>{magnet}</a></h3>\n"
+                else:
+                    to_write = f"\t\t\t\t</ul>\t\t\t\t<br>\n\t\t\t\t<h3><a href = '{magnet}'>下載連結</a></h3>\n"
                 f.write(to_write)
                 f.write("\t\t\t<hr />\n")
             else:
@@ -58,3 +69,52 @@ def clearConsole() -> None:
     if os.name in ("nt", "dos"):  # If Machine is running on Windows, use cls
         command = "cls"
     os.system(command)
+
+def changeDate(today: str) -> datetime:
+    """
+    In this function can input the days you want to change
+    rtype: datetime
+    """
+    print('[*]===============================================')
+    print(f"[*]今天是 {today}")
+    print(f"[*]操作方式:\n[*]\t昨天: -1, 前天: -2... 最多到-5\n[*]\t若要重置為今日日期，請輸入 'reset'")
+    print('[*]===============================================')
+    date = input("[?]請問日期要更改為?:")
+    if date in ('reset', 'RESET'):
+        new_date = str(time.strftime("%Y-%m-%d", time.localtime()))
+        print(f"[*]日期已重置為今日日期: {new_date}")
+        input('[*]請按 Enter 鍵回到主選單...')
+        return new_date
+
+    if int(date) < 0 and int(date) > -6:
+        new_date = getYesterday(abs(int(date)))
+    else:
+        new_date = today
+
+    print(f"[*]日期已更新為: {new_date}")
+    input('[*]請按 Enter 鍵回到主選單...')
+    return new_date
+
+def getYesterday(how_many_day_pre) -> datetime: 
+    """
+    Get date you want by input parameter
+    type how_many_day_pre: int
+    rtype: datetime
+    """
+    today=datetime.date.today() 
+    oneday=datetime.timedelta(days=how_many_day_pre) 
+    yesterday=today-oneday  
+    return yesterday
+
+def is_shirouto(title):
+    number_from_shirouto = re.compile(r"\d+\D+-\d+")
+    # number_from_studio = re.compile(r'\D+-\d+')
+
+    try:
+        # 先檢查是否為素人 ex: 498DDH-023(數字英文-數字)
+        is_shirouto = True
+        video_num = number_from_shirouto.search(title).group()
+    except AttributeError:
+        # 否則為一般番號 ex: STARS-401(英文-數字)
+        is_shirouto = False
+    return is_shirouto and 'FC2PPV' not in title

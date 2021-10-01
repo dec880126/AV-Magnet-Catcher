@@ -1,16 +1,19 @@
 import sys
 import os
+import time
 
-from package.tools import clearConsole
+from package.tools import clearConsole, changeDate
 from package.config import check_config_if_exist, load_config, make_config
 from t66y import start as t66y_start
+from sehuatang import start as sht_start
 
 info = {
     "author": "CyuanHunag",
-    "version": "1.0.0",
+    "version": "2.0.0-dev",
     "email": "dec880126@icloud.com",
     "official_site": "https://github.com/dec880126/AV-Magnet-Catcher",
 }
+today = str(time.strftime("%Y-%m-%d", time.localtime()))
 
 class Endding(Exception):
     def __init__(self):
@@ -37,36 +40,40 @@ def exit_AVMC():
     raise Endding
 
 def choose_fourmMode():
+    global today
     while True:
         clearConsole()
         print("[*]================== 選擇論壇 ==================")
         print("[*]目前支援之論壇有: ")
-        # print("[*]\t1. 色花堂 (sehuatang.org)")
-        print("[*]\t1. 草榴社區 (t66y.com)")
+        print("[*]\t1. 色花堂 (sehuatang.org)")
+        print("[*]\t2. 草榴社區 (t66y.com)")
         print("[*]=============================================")
         fourmChoose = input("[?]請輸入選擇的論壇之編號: ")
-
-        # if fourmChoose not in ("1", "2"):
-        if fourmChoose not in ("1"):
+        
+        if fourmChoose not in ("1", "2"):
             input("[!]警告: 請輸入正確的論壇編號! \n[*]請按一下鍵盤上的「Enter」以繼續...")
             continue
         break
 
-    # if fourmChoose == "1":
-    #     print("sehuatang")
-    # elif fourmChoose == "2":
     if fourmChoose == "1":
-        t66y_start()
+        sht_start(scrabDate = today)
+    elif fourmChoose == "2":
+        t66y_start(scrabDate = today)
 
     input("[*]請按一下鍵盤上的「Enter」以回到主畫面...")
 
+def edit_date():
+    """
+    rtype: str <- today's info
+    """
+    global today
+    today = changeDate(today)
+
 functionDefined = {
     "1": choose_fourmMode,
-    "EXIT": exit_AVMC,
+    "2": edit_date,
+    "EXIT": exit_AVMC
 }
-
-
-
 
 if __name__ == "__main__":
     #  Load config
@@ -86,13 +93,13 @@ if __name__ == "__main__":
         print("[*]" + info["official_site"].center(46))
         print("[*]===============================================")
         print("[*]               1. 開始抓取")
+        print("[*]               2. 日期設定")
         print("[*]               EXIT. 結束程式")
         print("[*]          隨時可按 Ctrl + C 回到此頁面")
         print("[*]===============================================")
         functionChoose = input(f"[?]請選擇功能(1~{len(functionDefined)-1}):")
 
-        if functionChoose == "exit":
-            functionChoose = "EXIT"
+        functionChoose = 'EXIT' if functionChoose == 'exit' else functionChoose
 
         # 檢查 functionChoose 是否在功能清單中 否則重複選擇直到成功
         if functionChoose not in functionDefined:

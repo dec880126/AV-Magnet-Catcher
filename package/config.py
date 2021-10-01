@@ -25,7 +25,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "Synology": config["Setting"]["Synology"],
             "MultiThreading": config["Setting"]["MultiThreading"]
         }
-    elif mode == "Uncensored":
+    elif mode == "t66y":
         temp = []
         for item in config["Uncensored"]["exclude"].replace(" ", "").split(","):
             temp.append(item)
@@ -38,6 +38,21 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "t66y": config["Cookies"]["t66y"],
             "FileSave2009": config["Cookies"]["FileSave2009"]
         }
+    elif mode == 'Synology':
+        return {
+            "upload": config["Synology"]["upload"],
+            "IP": config["Synology"]["IP"],
+            "PORT": config["Synology"]["PORT"],
+            "PATH": config["Synology"]["PATH"],
+            "SECURE": config["Synology"]["SECURE"] == 1,
+            "USER": config["Synology"]["USER"],
+            "PASSWORD": config["Synology"]["PASSWORD"],
+        }
+    elif mode == "Sehuatang":
+        return {
+            "exclude": config["Sehuatang"]["exclude"],
+            'jav_no_shirouto': True if config["Sehuatang"]["jav_no_shirouto"] == '1' else False
+        }
     else:
         print("[!]Error: 請選擇 load_config 之模式")
 
@@ -48,8 +63,10 @@ def make_config(path: str, showINFO = True) -> None:
 
     with open(path, "w", encoding="utf-8") as f:
         # system_config(f)
-        uncensored_config(f)
+        t66y_config(f)
         # cookie_config(f)
+        synology_config(f)
+        sht_config(f)
 
     if showINFO:
         print("[!] Config 已生成!")
@@ -66,7 +83,7 @@ def system_config(f: TextIOWrapper) -> None:
     f.write("MultiThreading = \n")
 
 
-def uncensored_config(f: TextIOWrapper) -> None:
+def t66y_config(f: TextIOWrapper) -> None:
     f.write("\n[Uncensored]\n")
     f.write("exclude = \n")
 
@@ -75,4 +92,20 @@ def cookie_config(f: TextIOWrapper) -> None:
     f.write("t66y = \n")
     f.write("FileSave2009 = \n")
 
+def synology_config(f: TextIOWrapper) -> None:
+    f.write("\n[Synology]\n")
+    f.write("; 若要開啟 Synology 自動上傳，將 upload 設為1\n")
+    f.write("upload = \n")
+    f.write("IP = \n")
+    f.write("PORT = \n")
+    f.write("; BT 下載之路徑\n")
+    f.write("PATH = \n")
+    f.write("; SECURE 預設為0\n")
+    f.write("SECURE = 0\n")
+    f.write("USER = \n")
+    f.write("PASSWORD = \n")
 
+def sht_config(f: TextIOWrapper) -> None:
+    f.write("\n[Sehuatang]\n")
+    f.write("exclude = \n")
+    f.write("jav_no_shirouto = \n")
