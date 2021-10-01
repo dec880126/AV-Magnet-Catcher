@@ -193,9 +193,10 @@ def select_article(workFourm: Sehuatang) -> list:
             print('[*]不要這部 ! ')
         else:
             print(f'[>]已選擇 {avList[idx][0]} 之 magnet: {avList[idx][1]}')
-            if avList[idx][1]:
+            if avList[idx][1] in magnetSelected:
                 print("[!]這部已經選取過了喔~ 已在清單內")
             else:
+                print("[*]添加成功 ! ")
                 magnetSelected.append(avList[idx][1])
         idx += 1
 
