@@ -50,7 +50,8 @@ def load_config(path = "./config.ini", mode=None) -> dict:
         }
     elif mode == "Sehuatang":
         return {
-            "exclude": config["Sehuatang"]["exclude"]
+            "exclude": config["Sehuatang"]["exclude"],
+            'jav_no_shirouto': True if config["Sehuatang"]["jav_no_shirouto"] == '1' else False
         }
     else:
         print("[!]Error: 請選擇 load_config 之模式")
