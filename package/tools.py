@@ -1,11 +1,14 @@
 import os
+import re
 import time
 import datetime
 
 def make_html(pageINFOs: list, fileName: str):
     '''
     Read the url in the imgLinks, and make the HTML file
+
     pageINFOs is list of Article() in sehuatang.py
+
     type imgLinks: list
     '''
     path = "./" + fileName
@@ -30,6 +33,8 @@ def make_html(pageINFOs: list, fileName: str):
     f.write("""\t<body>\n\t\t<div style="text-align:center;">\n""")
 
     for page in  pageINFOs:
+        if page.tag == '素人已排除':
+            continue
         link = page.link
         title = page.title
         imgLinks = page.imgLinks
@@ -100,3 +105,16 @@ def getYesterday(how_many_day_pre) -> datetime:
     oneday=datetime.timedelta(days=how_many_day_pre) 
     yesterday=today-oneday  
     return yesterday
+
+def is_shirouto(title):
+    number_from_shirouto = re.compile(r"\d+\D+-\d+")
+    # number_from_studio = re.compile(r'\D+-\d+')
+
+    try:
+        # 先檢查是否為素人 ex: 498DDH-023(數字英文-數字)
+        is_shirouto = True
+        video_num = number_from_shirouto.search(title).group()
+    except AttributeError:
+        # 否則為一般番號 ex: STARS-401(英文-數字)
+        is_shirouto = False
+    return is_shirouto and 'FC2PPV' not in title
