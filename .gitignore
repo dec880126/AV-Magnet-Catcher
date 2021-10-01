@@ -4,3 +4,4 @@
 package/__pycache__/__init__.cpython-39.pyc
 package/__pycache__/tools.cpython-39.pyc
 test.html
+*.pyc
