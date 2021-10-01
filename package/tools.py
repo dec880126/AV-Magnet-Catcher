@@ -5,6 +5,7 @@ import datetime
 def make_html(pageINFOs: list, fileName: str):
     '''
     Read the url in the imgLinks, and make the HTML file
+    pageINFOs is list of Article() in sehuatang.py
     type imgLinks: list
     '''
     path = "./" + fileName
