@@ -10,7 +10,6 @@ from package.tools import make_html
 import package.Synology_Web_API as Synology_Web_API
 import package.config as config
 
-
 class Article():
     def __init__(self) -> None:
         self.safe = False
@@ -20,43 +19,51 @@ class Sehuatang():
         self.articleINFO = {}        
 
     def get_todayList(self, URL, todayIs: str = datetime.now().strftime("%Y-%m-%d")) -> list:
-        res = requests.get(URL)
-        soup = bs4.BeautifulSoup(res.text, "html.parser")
-        tbodys = soup.find_all('tbody')
-
         todayList = []
-        for progress, tbody in zip(track(tbodys, description="[\]正在抓取本日文章"), tbodys):
-            try:
-                date = tbody.find('span', attrs = {'title': todayIs})
-                id = str(tbody.get('id'))
-                if 'normalthread' not in id or date is None:
-                    continue
-                articleCode = id[-6:]
-                todayList.append(articleCode)  # extract article_Code
-                tag = tbody.find('em').get_text()
-                title = tbody.find('a', attrs = {'class': 's xst'}).get_text()
+        temp = range(30)
+        pageNum = URL[-6]
+        [urlBase, urlSuffix] = URL.split(pageNum)
 
-                self.articleINFO[articleCode] = Article()
-                article = self.articleINFO[articleCode]
-                article.link = f'https://sehuatang.org/thread-{articleCode}-1-1.html'
-                article.title = title
-                article.tag = tag
+        while len(temp) == 30:
+            temp = []
 
-                # print(f"{tag} -> {title}")
-            except TypeError:
-                pass    
+            response = requests.get(URL)
+            s = bs4.BeautifulSoup(response.text, 'html.parser')
+            tbodys = s.find_all('tbody')
+
+            for progress, tbody in zip(track(tbodys, description=f"[\]正在抓取第{pageNum}頁"), tbodys):
+                try:
+                    date = tbody.find('span', attrs = {'title': todayIs})
+                    id = str(tbody.get('id'))
+                    if 'normalthread' not in id or date is None:
+                        continue
+                    articleCode = id[-6:]
+                    temp.append(articleCode)  # extract article_Code
+                    tag = tbody.find('em').get_text()
+                    title = tbody.find('a', attrs = {'class': 's xst'}).get_text()
+
+                    self.articleINFO[articleCode] = Article()
+                    self.articleINFO[articleCode].link = f'https://sehuatang.org/thread-{articleCode}-1-1.html'
+                    self.articleINFO[articleCode].title = title
+                    self.articleINFO[articleCode].tag = tag
+                except TypeError:
+                    pass
+            todayList.extend(temp)
+
+            if len(temp) == 30:
+                pageNum = str(int(pageNum) + 1)
+                URL = urlBase + pageNum + urlSuffix
 
         return todayList
 
     def get_Magnet_and_Pics(self, articleCode: str) -> None:
-        global progress_done
-        progress_done = False
+        global progress_done        
         response_of_pages = requests.get("https://www.sehuatang.org/thread-" + articleCode + "-1-1.html")
         bs_pages = bs4.BeautifulSoup(response_of_pages.text, "html.parser")
 
         # Get Magnet
-        magnet = bs_pages.find("div", "blockcode").get_text()
-        self.articleINFO[articleCode].magnet = magnet.removesuffix("复制代码")
+        magnet = bs_pages.find("div", "blockcode").get_text().removesuffix("复制代码")
+        self.articleINFO[articleCode].magnet = magnet
 
         # Get Pics
         img_block = bs_pages.find_all("ignore_js_op")
@@ -68,18 +75,27 @@ class Sehuatang():
             if pic_link != None:
                 picsList.append(pic_link)                    
         picsList.append("end of page")
-
+        
         self.articleINFO[articleCode].imgLinks = picsList
+        print(f"[>]{self.articleINFO[articleCode].title}: 完成")
+        # time.sleep(0.05)
         progress_done = True
 
 def task_progress_bar():
+    global progress_done
     for progress in zip(track(todays, description=f"[\]正在分析文章資料"), todays):
+        progress_done = False
         while not progress_done:
             pass
 
 def task_articleParser():
     with ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(currentFourm.get_Magnet_and_Pics, todays)
+    global progress_done
+    progress_done = True
+
+# def task_progress_done():
+#     global 
 
 def start(scrabDate: str):
     global currentFourm, todays
@@ -102,12 +118,10 @@ def start(scrabDate: str):
     task_article = threading.Thread(target=task_articleParser)
     task_article.start()
     
-    task_article.join()
     task_pgbar.join()
 
     if todays:
-        print(f"[!]共 {len(todays)} 篇文章")    
-        fileName =  "AVMC-Viewer-SHT-" + typeList[fourmIdx] + ".html"
+        fileName =  "AVMC-Viewer-SHT-" + typeList[fourmIdx - 1] + ".html"
         make_html(currentFourm.articleINFO.values(), fileName)
         webbrowser.open_new_tab(fileName)
 
@@ -187,4 +201,6 @@ def select_article(workFourm: Sehuatang) -> list:
 
     return magnetSelected
 
-# start()
+# test = Sehuatang()
+
+# print(test.get_todayList('https://www.sehuatang.org/forum-37-1.html'))
