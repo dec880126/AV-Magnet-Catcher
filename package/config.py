@@ -27,7 +27,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
         }
     elif mode == "t66y":
         temp = []
-        for item in config["Uncensored"]["exclude"].replace(" ", "").split(","):
+        for item in config["t66y"]["exclude"].replace(" ", "").split(","):
             temp.append(item)
 
         return {
@@ -84,7 +84,7 @@ def system_config(f: TextIOWrapper) -> None:
 
 
 def t66y_config(f: TextIOWrapper) -> None:
-    f.write("\n[Uncensored]\n")
+    f.write("\n[t66y]\n")
     f.write("exclude = \n")
 
 def cookie_config(f: TextIOWrapper) -> None:
