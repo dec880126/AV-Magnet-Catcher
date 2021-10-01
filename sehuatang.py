@@ -6,7 +6,7 @@ from rich.progress import track
 import webbrowser
 from datetime import datetime
 
-from package.tools import make_html
+from package.tools import is_shirouto, make_html
 import package.Synology_Web_API as Synology_Web_API
 import package.config as config
 
@@ -37,15 +37,24 @@ class Sehuatang():
                     id = str(tbody.get('id'))
                     if 'normalthread' not in id or date is None:
                         continue
+
+                    shtConfig =  config.load_config(mode = "Sehuatang")
+                    tag = tbody.find('em').get_text().replace('[', '').replace(']', '')
+                    if shtConfig['exclude'] in tag:
+                        continue
+
+                    title = tbody.find('a', attrs = {'class': 's xst'}).get_text()
                     articleCode = id[-6:]
                     temp.append(articleCode)  # extract article_Code
-                    tag = tbody.find('em').get_text()
-                    title = tbody.find('a', attrs = {'class': 's xst'}).get_text()
-
                     self.articleINFO[articleCode] = Article()
-                    self.articleINFO[articleCode].link = f'https://sehuatang.org/thread-{articleCode}-1-1.html'
-                    self.articleINFO[articleCode].title = title
-                    self.articleINFO[articleCode].tag = tag
+
+                    if is_shirouto(title):
+                        self.articleINFO[articleCode].title = title
+                        self.articleINFO[articleCode].tag = '素人已排除'
+                    else:
+                        self.articleINFO[articleCode].link = f'https://sehuatang.org/thread-{articleCode}-1-1.html'
+                        self.articleINFO[articleCode].title = title
+                        self.articleINFO[articleCode].tag = tag
                 except TypeError:
                     pass
             todayList.extend(temp)
@@ -57,7 +66,11 @@ class Sehuatang():
         return todayList
 
     def get_Magnet_and_Pics(self, articleCode: str) -> None:
-        global progress_done        
+        global progress_done
+        if self.articleINFO[articleCode].tag == '素人已排除':
+            print(f"[>]{self.articleINFO[articleCode].title}: 素人已排除")
+            progress_done = True
+            return
         response_of_pages = requests.get("https://www.sehuatang.org/thread-" + articleCode + "-1-1.html")
         bs_pages = bs4.BeautifulSoup(response_of_pages.text, "html.parser")
 
@@ -119,6 +132,7 @@ def start(scrabDate: str):
     task_article.start()
     
     task_pgbar.join()
+    task_article.join()
 
     if todays:
         fileName =  "AVMC-Viewer-SHT-" + typeList[fourmIdx - 1] + ".html"
@@ -164,8 +178,8 @@ def chooseFourm() -> int:
             return typeChoose
 
 def select_article(workFourm: Sehuatang) -> list:
-    titleList = [workFourm.articleINFO[articleCode].title for articleCode in todays]
-    magList = [workFourm.articleINFO[articleCode].magnet  for articleCode in todays]
+    titleList = [workFourm.articleINFO[articleCode].title for articleCode in todays if workFourm.articleINFO[articleCode].tag != '素人已排除']
+    magList = [workFourm.articleINFO[articleCode].magnet  for articleCode in todays if workFourm.articleINFO[articleCode].tag != '素人已排除']
     magnetSelected = []
 
     avList = {}
