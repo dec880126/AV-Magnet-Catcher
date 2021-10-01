@@ -33,7 +33,7 @@ def get_todayLists(fourmName_zh: str, fourmName_en: str, scrabDate: str) -> list
         "無碼": "http://t66y.com/thread0806.php?fid=2&search=2"
     }
 
-    fourmDict[fourmName_zh] = Fourm(fourmName_zh, config.load_config(mode=fourmName_en))
+    fourmDict[fourmName_zh] = Fourm(fourmName_zh, config.load_config(mode='t66y'))
 
     res = requests.get(urlDict[fourmName_zh], headers=t66y_headers)
     res.encoding = "gbk"

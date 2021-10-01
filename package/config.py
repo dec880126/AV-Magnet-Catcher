@@ -25,7 +25,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "Synology": config["Setting"]["Synology"],
             "MultiThreading": config["Setting"]["MultiThreading"]
         }
-    elif mode == "Uncensored":
+    elif mode == "t66y":
         temp = []
         for item in config["Uncensored"]["exclude"].replace(" ", "").split(","):
             temp.append(item)
@@ -47,6 +47,10 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "SECURE": config["Synology"]["SECURE"] == 1,
             "USER": config["Synology"]["USER"],
             "PASSWORD": config["Synology"]["PASSWORD"],
+        }
+    elif mode == "Sehuatang":
+        return {
+            "exclude": config["Sehuatang"]["exclude"]
         }
     else:
         print("[!]Error: 請選擇 load_config 之模式")
