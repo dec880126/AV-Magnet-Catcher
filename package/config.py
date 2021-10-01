@@ -65,6 +65,7 @@ def make_config(path: str, showINFO = True) -> None:
         # system_config(f)
         t66y_config(f)
         # cookie_config(f)
+        synology_config(f)
         sht_config(f)
 
     if showINFO:
@@ -91,7 +92,7 @@ def cookie_config(f: TextIOWrapper) -> None:
     f.write("t66y = \n")
     f.write("FileSave2009 = \n")
 
-def sht_config(f: TextIOWrapper) -> None:
+def synology_config(f: TextIOWrapper) -> None:
     f.write("\n[Synology]\n")
     f.write("; 若要開啟 Synology 自動上傳，將 upload 設為1\n")
     f.write("upload = \n")
@@ -104,4 +105,7 @@ def sht_config(f: TextIOWrapper) -> None:
     f.write("USER = \n")
     f.write("PASSWORD = \n")
 
-
+def sht_config(f: TextIOWrapper) -> None:
+    f.write("\n[Sehuatang]\n")
+    f.write("exclude = \n")
+    f.write("jav_no_shirouto = \n")
