@@ -118,3 +118,16 @@ def is_shirouto(title):
         # 否則為一般番號 ex: STARS-401(英文-數字)
         is_shirouto = False
     return is_shirouto and 'FC2PPV' not in title
+
+def remove_html_if_exist():
+    typeList = ("無碼", "有碼", "國產", "歐美", "中文")
+    for fourm in typeList:
+        path_HTML = "./" + "AVMC-Viewer-SHT-" + fourm + ".html"
+        if os.path.isfile(path_HTML):
+            os.remove(path_HTML)
+            print("[*]" + path_HTML + " -> HTML files 已刪除")
+
+        path_HTML = "./" + "AVMC-Viewer-T66Y-" + fourm + ".html"
+        if os.path.isfile(path_HTML):
+            os.remove(path_HTML)
+            print("[*]" + path_HTML + " -> HTML files 已刪除")

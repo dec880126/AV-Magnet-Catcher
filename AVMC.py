@@ -2,7 +2,7 @@ import sys
 import os
 import time
 
-from package.tools import clearConsole, changeDate
+from package.tools import clearConsole, changeDate, remove_html_if_exist
 from package.config import check_config_if_exist, load_config, make_config
 from t66y import start as t66y_start
 from sehuatang import start as sht_start
@@ -35,7 +35,7 @@ def exit_AVMC():
     刪除 HTML files 並關閉程式
     """
     # TODO
-    # remove_html_if_exist()
+    remove_html_if_exist()
     input("[*]按一下鍵盤上的「Enter」來結束程式...")
     raise Endding
 
