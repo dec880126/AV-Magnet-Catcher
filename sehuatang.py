@@ -12,11 +12,15 @@ import package.config as config
 
 class Article():
     def __init__(self) -> None:
-        self.safe = False
+        self.title = ""
+        self.tag = ""
+        self.link = ""
+        self.magnet = ""
+        self.imgLinks = []
 
 class Sehuatang():
     def __init__(self) -> None:
-        self.articleINFO = {}        
+        self.articleINFO = {}
 
     def get_todayList(self, URL, todayIs: str = datetime.now().strftime("%Y-%m-%d")) -> list:
         todayList = []
