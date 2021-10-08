@@ -161,6 +161,9 @@ def start(scrabDate: str):
             for magnet_to_download in magnetSelected:
                 ds.uploadTorrent(magnet_to_download, syno_info["PATH"])
             print("[*]" + "Synology Web API 作業完成".center(50, "="))
+        else:
+            for idx, magnet in enumerate(magnetSelected):
+                print(f"[>] {idx}. {magnet}")
     else:
         print("[*]未選取任何文章 ! ")
 
@@ -197,9 +200,11 @@ def select_article(workFourm: Sehuatang) -> list:
 
     idx = 1
     while idx < len(titleList)+1:
+        title = avList[idx][0]
+        magnet = avList[idx][1]
         print("[*]" + '*'*50)
         print("[*]目前選擇的是:")
-        action = input(f"[>]{idx}. {avList[idx][0]}: ")
+        action = input(f"[>]{idx}. {title}: ")
         if action == '-1' and idx == 1:
             print("[!]目前還不能取消操作 ! ")
             continue
@@ -208,14 +213,18 @@ def select_article(workFourm: Sehuatang) -> list:
             idx -= 1
             continue
         elif action == '':
-            print('[*]不要這部 ! ')
+            if magnet in magnetSelected:                
+                magnetSelected.remove(magnet)
+                print(f'[*]已取消 {title} 的 magnet 選取 ! ')
+            else:
+                print('[*]不要這部 ! ')
         else:
-            print(f'[>]已選擇 {avList[idx][0]} 之 magnet: {avList[idx][1]}')
-            if avList[idx][1] in magnetSelected:
+            print(f'[>]已選擇 {title} 之 magnet: {magnet}')
+            if magnet in magnetSelected:
                 print("[!]這部已經選取過了喔~ 已在清單內")
             else:
                 print("[*]添加成功 ! ")
-                magnetSelected.append(avList[idx][1])
+                magnetSelected.append(magnet)
         idx += 1
 
     return magnetSelected
