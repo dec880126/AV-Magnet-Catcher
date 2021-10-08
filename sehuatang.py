@@ -163,7 +163,7 @@ def start(scrabDate: str):
             print("[*]" + "Synology Web API 作業完成".center(50, "="))
         else:
             for idx, magnet in enumerate(magnetSelected):
-                print(f"[>] {idx}. {magnet}")
+                print(f"[>] {idx + 1}. {magnet}")
     else:
         print("[*]未選取任何文章 ! ")
 
