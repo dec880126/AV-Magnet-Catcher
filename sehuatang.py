@@ -1,10 +1,11 @@
+from datetime import datetime
+from rich.progress import track
+from concurrent.futures import ThreadPoolExecutor
 import requests
 import bs4
-from concurrent.futures import ThreadPoolExecutor
 import threading
-from rich.progress import track
 import webbrowser
-from datetime import datetime
+import time
 
 from package.tools import changeDate, is_shirouto, make_html, get_proxy_in_multi_threading
 import package.Synology_Web_API as Synology_Web_API
@@ -19,18 +20,18 @@ class Article():
         self.imgLinks = []
 
 class Sehuatang():
-    def __init__(self, auto_proxy: bool = True) -> None:
+    def __init__(self, auto_proxy: bool = False) -> None:
         self.articleINFO = {}
         self.auto_proxy = auto_proxy
         self.header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36 Edg/94.0.992.38'
         }
 
-    def get_todayList(self, URL, todayIs: str = datetime.now().strftime("%Y-%m-%d")) -> list:
+    def get_todayList(self, URL: str, todayIs: str = datetime.now().strftime("%Y-%m-%d")) -> list:
         todayList = []
         temp = range(30)
         pageNum = URL[-6]
-        [urlBase, urlSuffix] = URL.split(pageNum)
+        urlBase = URL[:-6]
 
         while len(temp) == 30:
             temp = []
@@ -69,7 +70,7 @@ class Sehuatang():
 
             if len(temp) == 30:
                 pageNum = str(int(pageNum) + 1)
-                URL = urlBase + pageNum + urlSuffix
+                URL = urlBase + pageNum + '.html'
 
         return todayList
 
@@ -82,11 +83,16 @@ class Sehuatang():
         if self.auto_proxy:
             while True:
                 try:
+                    time.sleep(0.5)
                     response_of_pages = requests.get("https://www.sehuatang.org/thread-" + articleCode + "-1-1.html", timeout = 3, proxies=self.proxy, headers=self.header)
                     break
                 except requests.exceptions.RequestException:
-                    print("[*]連線逾時... 將從 validProxy 中取用其他可用代理")
-                    self.change_proxy()
+                    next_idx = self.validProxys.index(self.proxy) + 1
+
+                    if next_idx == len(self.validProxys):
+                        self.proxy_setting()
+                    else:
+                        self.proxy = self.validProxys[next_idx]
         else:
             response_of_pages = requests.get("https://www.sehuatang.org/thread-" + articleCode + "-1-1.html")
         bs_pages = bs4.BeautifulSoup(response_of_pages.text, "html.parser")
@@ -108,7 +114,6 @@ class Sehuatang():
         
         self.articleINFO[articleCode].imgLinks = picsList
         print(f"[>]{self.articleINFO[articleCode].title}: 完成")
-        # time.sleep(0.05)
         progress_done = True
 
     def proxy_setting(self):
@@ -119,17 +124,6 @@ class Sehuatang():
             'https':"http://" + self.validProxys[0]
         }
 
-    def change_proxy(self):
-        index_of_current_proxy = self.validProxys.index(self.proxy)
-        
-        print(f"{index_of_current_proxy < len(self.validProxys)=}")
-        if index_of_current_proxy < len(self.validProxys):
-            self.proxy = {
-                'http':"http://" + self.validProxys[index_of_current_proxy + 1],
-                'https':"http://" + self.validProxys[index_of_current_proxy + 1]
-            }
-        else:
-            self.proxy_setting()
 
 def task_progress_bar():
     global progress_done, currentFourm
@@ -139,26 +133,26 @@ def task_progress_bar():
         while not progress_done:
             pass
 
+
 def task_articleParser():
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         executor.map(currentFourm.get_Magnet_and_Pics, todays)
     global progress_done
     progress_done = True
 
-# def task_progress_done():
-#     global 
 
 def start(scrabDate: str, auto_proxy: bool = True):
     global currentFourm, todays
     currentFourm = Sehuatang()
-    typeList = ("無碼", "有碼", "國產", "歐美", "中文")
+    typeList = ("無碼", "有碼", "國產", "歐美", "4K", "中文")
     magnetSelected = []
     URL_library = {
         1: 'https://www.sehuatang.org/forum-36-1.html',
         2: 'https://www.sehuatang.org/forum-37-1.html',
         3: 'https://www.sehuatang.org/forum-2-1.html',
         4: 'https://www.sehuatang.org/forum-38-1.html',
-        5: 'https://www.sehuatang.org/forum-103-1.html'
+        5: 'https://www.sehuatang.org/forum-151-1.html',
+        6: 'https://www.sehuatang.org/forum-103-1.html'
     }
 
     fourmIdx = chooseFourm()
@@ -185,7 +179,7 @@ def start(scrabDate: str, auto_proxy: bool = True):
 
         syno_info = config.load_config(mode = 'Synology')
     else:
-        print(f"[!]日期: {scrabDate} 尚未有文章更新 ! ")
+        print(f"[!]日期: {scrabDate} 無文章更新 ! ")
         return
 
     if magnetSelected:
@@ -207,17 +201,18 @@ def start(scrabDate: str, auto_proxy: bool = True):
 
 
 def chooseFourm() -> int:
-    typeList = ("無碼", "有碼", "國產", "歐美", "中文")
+    typeList = ("無碼", "有碼", "國產", "歐美", "4K", "中文")
     print('[*]===============================================') 
     print("[*]                 1. 無碼")
     print("[*]                 2. 有碼")
     print("[*]                 3. 國產")
     print("[*]                 4. 歐美")
-    print("[*]                 5. 中文")
+    print("[*]                 5. 4K")
+    print("[*]                 6. 中文")
     print('[*]===============================================') 
     while True:     
-        typeChoose = int(input(f"[?]請選擇分區(1~5):"))
-        if typeChoose >= 1 and typeChoose <= 5:
+        typeChoose = int(input(f"[?]請選擇分區(1~{len(typeList)}):"))
+        if typeChoose >= 1 and typeChoose <= len(typeList):
             print(f'[*]選擇的是 {typeChoose}. {typeList[typeChoose-1]} 分區')
             print('[*]===============================================') 
             return typeChoose
