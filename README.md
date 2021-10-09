@@ -5,15 +5,23 @@
 
 ## Working Now
 
-> 2021.09.29
+> 2021.10.10
 
-正在整合Auto SHT原有功能
+正在設計自動代理爬蟲
 
 ## What's New
 
-目前只能整理草榴凌亂的頁面
+進度:
+ - 已完成SHT自動代理
+ - t66y方面正在處理
 
-抓取magnet被reCAPTCHA擋住了==
+前次版本問題:
+ - HTTP 403 Forbidden in t66y.com
+   - 問題原因: 高頻率request遭伺服器自動IP封鎖
+   - 問題解法: 多線程代理爬蟲
+
+新增:
+ - SHT新增**4K原版**分區的分析功能
 
 ## Guides
 
