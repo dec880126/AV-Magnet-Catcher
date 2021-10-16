@@ -17,7 +17,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
      - Uncensored
      - Cookies
     """
-    config = configparser.RawConfigParser()   
+    config = configparser.RawConfigParser()
     config.read(path, encoding="utf-8")
 
     if mode == "Setting":
@@ -26,10 +26,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "MultiThreading": config["Setting"]["MultiThreading"]
         }
     elif mode == "t66y":
-        temp = []
-        for item in config["t66y"]["exclude"].replace(" ", "").split(","):
-            temp.append(item)
-
+        temp = [item for item in config["t66y"]["exclude"].replace(" ", "").split(",")]
         return {
             "exclude": tuple(temp)
         }
@@ -40,19 +37,21 @@ def load_config(path = "./config.ini", mode=None) -> dict:
         }
     elif mode == 'Synology':
         return {
-            "upload": config["Synology"]["upload"],
-            "IP": config["Synology"]["IP"],
-            "PORT": config["Synology"]["PORT"],
-            "PATH": config["Synology"]["PATH"],
+            "upload": config["Synology"]["upload"] == '1',
+            "IP": config["Synology"]["IP"] or None,
+            "PORT": config["Synology"]["PORT"] or None,
+            "PATH": config["Synology"]["PATH"] or None,
             "SECURE": config["Synology"]["SECURE"] == 1,
-            "USER": config["Synology"]["USER"],
-            "PASSWORD": config["Synology"]["PASSWORD"],
+            "USER": config["Synology"]["USER"] or None,
+            "PASSWORD": config["Synology"]["PASSWORD"] or None,
         }
+
     elif mode == "Sehuatang":
         return {
             "exclude": config["Sehuatang"]["exclude"],
-            'jav_no_shirouto': True if config["Sehuatang"]["jav_no_shirouto"] == '1' else False
+            'jav_no_shirouto': config["Sehuatang"]["jav_no_shirouto"] == '1',
         }
+
     else:
         print("[!]Error: 請選擇 load_config 之模式")
 
@@ -95,9 +94,9 @@ def cookie_config(f: TextIOWrapper) -> None:
 def synology_config(f: TextIOWrapper) -> None:
     f.write("\n[Synology]\n")
     f.write("; 若要開啟 Synology 自動上傳，將 upload 設為1\n")
-    f.write("upload = \n")
+    f.write("upload = 0\n")
     f.write("IP = \n")
-    f.write("PORT = \n")
+    f.write("PORT = 5000\n")
     f.write("; BT 下載之路徑\n")
     f.write("PATH = \n")
     f.write("; SECURE 預設為0\n")
