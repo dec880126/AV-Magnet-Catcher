@@ -85,14 +85,13 @@ class Sehuatang():
         # Get Pics
         img_block = bs_pages.find_all("ignore_js_op")
 
-        picsList = []
-        picsList.append("Head of Page")
+        picsList = ['Head of Page']
         for block in img_block[:-1]:
             pic_link = block.find("img").get("file")
             if pic_link != None:
-                picsList.append(pic_link)                    
+                picsList.append(pic_link)
         picsList.append("end of page")
-        
+
         self.articleINFO[articleCode].imgLinks = picsList
         print(f"[>]{self.articleINFO[articleCode].title}: 完成")
         # time.sleep(0.05)
@@ -100,7 +99,7 @@ class Sehuatang():
 
 def task_progress_bar():
     global progress_done
-    for progress in zip(track(todays, description=f"[\]正在分析文章資料"), todays):
+    for _ in zip(track(todays, description='[\\]正在分析文章資料'), todays):
         progress_done = False
         while not progress_done:
             pass
@@ -134,7 +133,7 @@ def start(scrabDate: str):
     task_pgbar.start()
     task_article = threading.Thread(target=task_articleParser)
     task_article.start()
-    
+
     task_pgbar.join()
     task_article.join()
 
@@ -168,7 +167,7 @@ def start(scrabDate: str):
             else:
                 print(f'[!]Synology Web API功能: {syno_info["upload"]}')
         except Exception as info:
-            print(f"[!]..........Synology Web API-上傳失敗..........")
+            print('[!]..........Synology Web API-上傳失敗..........')
             print(info)
         finally:
             print("[*]" + "已選取之Magnet清單".center(50, "="))
@@ -181,15 +180,15 @@ def start(scrabDate: str):
 
 def chooseFourm() -> int:
     typeList = ("無碼", "有碼", "國產", "歐美", "中文")
-    print('[*]===============================================') 
+    print('[*]===============================================')
     print("[*]                 1. 無碼")
     print("[*]                 2. 有碼")
     print("[*]                 3. 國產")
     print("[*]                 4. 歐美")
     print("[*]                 5. 中文")
-    print('[*]===============================================') 
-    while True:     
-        typeChoose = int(input(f"[?]請選擇分區(1~5):"))
+    print('[*]===============================================')
+    while True: 
+        typeChoose = int(input('[?]請選擇分區(1~5):'))
         if typeChoose >= 1 and typeChoose <= 5:
             print(f'[*]選擇的是 {typeChoose}. {typeList[typeChoose-1]} 分區')
             print('[*]===============================================') 
