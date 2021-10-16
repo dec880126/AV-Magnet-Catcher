@@ -187,17 +187,20 @@ class T66Y():
         #     print(f"{article.magnet}")
         #     print(f"{article.imgLinks}")
 
-test = T66Y()
+def start():
+    pass
 
-test.get_cookie()
+# test = T66Y()
 
-test.get_todayList(fourmType = "有碼")
+# test.get_cookie()
 
-test.parse_article_in_todayList()
+# test.get_todayList(fourmType = "有碼")
+
+# test.parse_article_in_todayList()
 
 # test.show()
 
-test.make_html("測試.html")
+# test.make_html("測試.html")
 
 # test.get_cookie()
 # test.articleParser("http://t66y.com/htm_data/2110/15/4719933.html")
