@@ -40,13 +40,13 @@ def load_config(path = "./config.ini", mode=None) -> dict:
         }
     elif mode == 'Synology':
         return {
-            "upload": config["Synology"]["upload"],
-            "IP": config["Synology"]["IP"],
-            "PORT": config["Synology"]["PORT"],
-            "PATH": config["Synology"]["PATH"],
+            "upload": config["Synology"]["upload"] == '1',
+            "IP": config["Synology"]["IP"] if config["Synology"]["IP"] else None,
+            "PORT": config["Synology"]["PORT"] if config["Synology"]["PORT"] else None,
+            "PATH": config["Synology"]["PATH"] if config["Synology"]["PATH"] else None,
             "SECURE": config["Synology"]["SECURE"] == 1,
-            "USER": config["Synology"]["USER"],
-            "PASSWORD": config["Synology"]["PASSWORD"],
+            "USER": config["Synology"]["USER"] if config["Synology"]["USER"] else None,
+            "PASSWORD": config["Synology"]["PASSWORD"] if config["Synology"]["PASSWORD"] else None,
         }
     elif mode == "Sehuatang":
         return {
@@ -95,9 +95,9 @@ def cookie_config(f: TextIOWrapper) -> None:
 def synology_config(f: TextIOWrapper) -> None:
     f.write("\n[Synology]\n")
     f.write("; 若要開啟 Synology 自動上傳，將 upload 設為1\n")
-    f.write("upload = \n")
+    f.write("upload = 0\n")
     f.write("IP = \n")
-    f.write("PORT = \n")
+    f.write("PORT = 5000\n")
     f.write("; BT 下載之路徑\n")
     f.write("PATH = \n")
     f.write("; SECURE 預設為0\n")
