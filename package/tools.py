@@ -2,6 +2,8 @@ import os
 import re
 import time
 import datetime
+import requests
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
 
 def make_html(pageINFOs: list, fileName: str):
     '''
@@ -130,4 +132,53 @@ def remove_html_if_exist():
         path_HTML = "./" + "AVMC-Viewer-T66Y-" + fourm + ".html"
         if os.path.isfile(path_HTML):
             os.remove(path_HTML)
-            print("[*]" + path_HTML + " -> HTML files 已刪除")
+            print("[*]" + path_HTML + " -> HTML files 已刪除")            
+
+def get_proxy(proxy ,timeout = 2, extract_maximum = 10, good_proxy_define: float = 2.0):
+
+    # if not validProxy:
+    try:
+        begin = time.time()
+        requests.get(
+            url = 'https://api.ipify.org?format=json',
+            proxies={
+                'http':"http://" + proxy,
+                'https':"http://" + proxy
+            },
+            timeout = timeout
+        )
+        spend_time = time.time() - begin
+        good_proxy = spend_time < good_proxy_define
+        text = f'延遲小於 {good_proxy_define} 秒: 採用' if good_proxy else f'延遲大於 {good_proxy_define} 秒: 不採用'
+        print(f"[>]{proxy} -> 有效 / 耗時: {spend_time: 2.2f}s / {text}")
+        if good_proxy:
+            validProxy.append(proxy)
+    except requests.exceptions.ConnectTimeout:
+        print(f"[!] {proxy} -> 失敗 ! ")
+
+
+def get_proxy_in_multi_threading(extract_maximum = 10) -> list:    
+    global validProxy
+    validProxy = []
+
+    res = requests.get('https://free-proxy-list.net/')
+    freeProxys = re.findall('\d+\.\d+\.\d+\.\d+:\d+', res.text)
+
+    print(f"[*]這次共有 {len(freeProxys)} 個免費代理待測")
+
+    executor = ThreadPoolExecutor(max_workers=20)
+
+    # submit()的參數： 第一個為函數， 之後為該函數的傳入參數，允許有多個
+    future_tasks = [executor.submit(get_proxy, freeProxy) for freeProxy in freeProxys]
+
+    # 等待所有的線程完成，才進入後續的執行
+    wait(future_tasks, return_when=ALL_COMPLETED)
+
+    # with ThreadPoolExecutor(max_workers=10) as executor:
+    #     executor.map(get_proxy, freeProxys)
+    
+    print(f"[>]從 {len(freeProxys)} 個免費代理中取得了 {len(validProxy)} 個有效代理")
+    return validProxy
+
+
+# print(get_proxy_in_multi_threading())

@@ -4,7 +4,7 @@ import time
 
 from package.tools import clearConsole, changeDate, remove_html_if_exist
 from package.config import check_config_if_exist, load_config, make_config
-from t66y import start as t66y_start
+from t66y import T66Y
 from sehuatang import start as sht_start
 
 info = {
@@ -58,7 +58,7 @@ def choose_fourmMode():
     if fourmChoose == "1":
         sht_start(scrabDate = today)
     elif fourmChoose == "2":
-        t66y_start(scrabDate = today)
+        T66Y.start()
 
     input("[*]請按一下鍵盤上的「Enter」以回到主畫面...")
 
