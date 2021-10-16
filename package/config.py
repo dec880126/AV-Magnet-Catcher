@@ -17,7 +17,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
      - Uncensored
      - Cookies
     """
-    config = configparser.RawConfigParser()   
+    config = configparser.RawConfigParser()
     config.read(path, encoding="utf-8")
 
     if mode == "Setting":
@@ -26,10 +26,7 @@ def load_config(path = "./config.ini", mode=None) -> dict:
             "MultiThreading": config["Setting"]["MultiThreading"]
         }
     elif mode == "t66y":
-        temp = []
-        for item in config["t66y"]["exclude"].replace(" ", "").split(","):
-            temp.append(item)
-
+        temp = [item for item in config["t66y"]["exclude"].replace(" ", "").split(",")]
         return {
             "exclude": tuple(temp)
         }
@@ -41,18 +38,20 @@ def load_config(path = "./config.ini", mode=None) -> dict:
     elif mode == 'Synology':
         return {
             "upload": config["Synology"]["upload"] == '1',
-            "IP": config["Synology"]["IP"] if config["Synology"]["IP"] else None,
-            "PORT": config["Synology"]["PORT"] if config["Synology"]["PORT"] else None,
-            "PATH": config["Synology"]["PATH"] if config["Synology"]["PATH"] else None,
+            "IP": config["Synology"]["IP"] or None,
+            "PORT": config["Synology"]["PORT"] or None,
+            "PATH": config["Synology"]["PATH"] or None,
             "SECURE": config["Synology"]["SECURE"] == 1,
-            "USER": config["Synology"]["USER"] if config["Synology"]["USER"] else None,
-            "PASSWORD": config["Synology"]["PASSWORD"] if config["Synology"]["PASSWORD"] else None,
+            "USER": config["Synology"]["USER"] or None,
+            "PASSWORD": config["Synology"]["PASSWORD"] or None,
         }
+
     elif mode == "Sehuatang":
         return {
             "exclude": config["Sehuatang"]["exclude"],
-            'jav_no_shirouto': True if config["Sehuatang"]["jav_no_shirouto"] == '1' else False
+            'jav_no_shirouto': config["Sehuatang"]["jav_no_shirouto"] == '1',
         }
+
     else:
         print("[!]Error: 請選擇 load_config 之模式")
 
