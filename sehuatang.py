@@ -152,18 +152,29 @@ def start(scrabDate: str):
 
     if magnetSelected:
         # Synology Web API
-        if syno_info["upload"]:
-            print("[*]" + "Synology Web API".center(50, "="))
-            ds = Synology_Web_API.SynologyDownloadStation(
-                ip=syno_info["IP"], port=syno_info["PORT"], secure=syno_info["SECURE"]
-            )
-            ds.login(syno_info["USER"], syno_info["PASSWORD"])
-            for magnet_to_download in magnetSelected:
-                ds.uploadTorrent(magnet_to_download, syno_info["PATH"])
-            print("[*]" + "Synology Web API 作業完成".center(50, "="))
-        else:
+        try:
+            if syno_info["upload"]:
+                print("[*]" + "Synology Web API".center(50, "="))
+                if None in syno_info.values():
+                    lost_items = [key for key in syno_info.keys() if syno_info[key] is None]
+                    raise Exception(f"[!]於Config中缺失了下列共 {len(lost_items)} 項參數。(請檢查檔案: config.ini):\n[>]\t{lost_items}")
+                ds = Synology_Web_API.SynologyDownloadStation(
+                    ip=syno_info["IP"], port=syno_info["PORT"], secure=syno_info["SECURE"]
+                )
+                ds.login(syno_info["USER"], syno_info["PASSWORD"])
+                for magnet_to_download in magnetSelected:
+                    ds.uploadTorrent(magnet_to_download, syno_info["PATH"])
+                print("[*]" + "Synology Web API 作業完成".center(50, "="))
+            else:
+                print(f'[!]Synology Web API功能: {syno_info["upload"]}')
+        except Exception as info:
+            print(f"[!]..........Synology Web API-上傳失敗..........")
+            print(info)
+        finally:
+            print("[*]" + "已選取之Magnet清單".center(50, "="))
             for idx, magnet in enumerate(magnetSelected):
                 print(f"[>] {idx + 1}. {magnet}")
+            print("[*]" + "已完成所有作業".center(50, "="))
     else:
         print("[*]未選取任何文章 ! ")
 
@@ -185,6 +196,7 @@ def chooseFourm() -> int:
             return typeChoose
 
 def select_article(workFourm: Sehuatang) -> list:
+    print("[*]" + "挑選作業開始".center(50, "="))
     titleList = [workFourm.articleINFO[articleCode].title for articleCode in todays if workFourm.articleINFO[articleCode].tag != '素人已排除']
     magList = [workFourm.articleINFO[articleCode].magnet  for articleCode in todays if workFourm.articleINFO[articleCode].tag != '素人已排除']
     magnetSelected = []
@@ -204,7 +216,7 @@ def select_article(workFourm: Sehuatang) -> list:
         magnet = avList[idx][1]
         print("[*]" + '*'*50)
         print("[*]目前選擇的是:")
-        action = input(f"[>]{idx}. {title}: ")
+        action = input(f"[>]{idx}/{len(titleList)}. {title}: ")
         if action == '-1' and idx == 1:
             print("[!]目前還不能取消操作 ! ")
             continue
@@ -219,7 +231,7 @@ def select_article(workFourm: Sehuatang) -> list:
             else:
                 print('[*]不要這部 ! ')
         else:
-            print(f'[>]已選擇 {title} 之 magnet: {magnet}')
+            print(f'[>]已選擇 {title} 之 magnet: \n[>]\t{magnet}')
             if magnet in magnetSelected:
                 print("[!]這部已經選取過了喔~ 已在清單內")
             else:
@@ -227,6 +239,7 @@ def select_article(workFourm: Sehuatang) -> list:
                 magnetSelected.append(magnet)
         idx += 1
 
+    print("[*]" + "挑選作業結束".center(50, "="))
     return magnetSelected
 
 # test = Sehuatang()
